@@ -25,23 +25,23 @@ float objectY = 0.0f;
 void moveSpaceShip(GLFWwindow* window) {
     // Check if the 'A' key is pressed
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        objectX -= 0.001f;
+        objectX -= 0.01f;
     }
     // Check if the 'D' key is pressed
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        objectX += 0.001f;
+        objectX += 0.01f;
     }
     // Check if the 'W' key is pressed
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        objectY += 0.001f;
+        objectY += 0.01f;
     }
     // Check if the 'S' key is pressed
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        objectY -= 0.001f;
+        objectY -= 0.01f;
     }
 }
 
-void loadTexture() {
+int loadTexture() {
     // Creating a texture
     unsigned int texture;
     glGenTextures(1, &texture);
@@ -49,8 +49,8 @@ void loadTexture() {
 
 
     // Set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
     // Set the texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -58,7 +58,7 @@ void loadTexture() {
 
     // Load image, create texture and generate mipmaps
     int width, height, nrChannels;
-    unsigned char *data = stbi_load("/Users/kunaltiwari/Desktop/Projects/game/assets/asteroid.png", &width, &height, &nrChannels, 0);
+    unsigned char *data = stbi_load("/Users/kunaltiwari/Desktop/Projects/game/assets/spaceship.png", &width, &height, &nrChannels, 0);
 
     // Check if data is loaded
     if(data) {
@@ -67,6 +67,8 @@ void loadTexture() {
     } else {
         std::cout << "Failed to load texture" << std::endl;
     }
+
+    return texture;
 
 }
 
@@ -104,9 +106,9 @@ int main() {
 
     // Set up vertex data (a single line)
     float vertices[] = {
-         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
-        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
-         0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f
+        -0.1f, -0.173f, 0.0f,  0.0f, 1.0f, 0.0f,   0.0f, 0.0f, 
+         0.1f, -0.173f, 0.0f,  1.0f, 0.0f, 0.0f,   1.0f, 0.0f,
+         0.0f,  0.173f, 0.0f,  0.0f, 0.0f, 1.0f,   0.5f, 1.0f,
     };
 
     unsigned int VBO, VAO;
@@ -115,16 +117,22 @@ int main() {
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);  
+   
+    // Load the texture
+    int texture = loadTexture();
+
     while(!glfwWindowShouldClose(window)) {
         // clear the colorbuffer
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
 
         // Handling Keyboard input
         processInput(window);
