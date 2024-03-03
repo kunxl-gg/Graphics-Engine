@@ -1,5 +1,6 @@
 #ifndef SHADER
 #define SHADER
+#include <glm/glm.hpp>
 #include <glad/glad.h>
 #include <string>
 #include <fstream>
@@ -98,9 +99,22 @@ public:
     }
 
     // utility functions
-    void setBool(const std::string &name, bool value);
-    void setInt(const std::string &name, int value);
-    void setFloat(const std::string &name, float value);
+
+    void setBool(const std::string &name, bool value) const {         
+        glUniform1i(glGetUniformLocation(programId, name.c_str()), (int)value); 
+    }
+    void setInt(const std::string &name, int value) const { 
+        glUniform1i(glGetUniformLocation(programId, name.c_str()), value); 
+    }
+    void setFloat(const std::string &name, float value) const { 
+        glUniform1f(glGetUniformLocation(programId, name.c_str()), value); 
+    }
+    void setVec4(const std::string &name, float x, float y, float z, float w) const {
+        glUniform4f(glGetUniformLocation(programId, name.c_str()), x, y, z, w);
+    }
+    void setMat4(const std::string &name, glm::mat4 value) const {
+        glUniformMatrix4fv(glGetUniformLocation(programId, name.c_str()), 1, GL_FALSE, &value[0][0]);
+    }
 
 };
 #endif // !SHADER
